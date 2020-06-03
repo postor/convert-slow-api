@@ -46,11 +46,17 @@ export default function (asyncFn) {
     id = parseInt(id)
     let cacheKey = `${CACHE_PREFIX}${id}`
     let cached = await cache.get(cacheKey)
+    
     if (!cached) return res.json({
       error: `id=${id} job not found`,
     })
+
     res.json(cached)
-    await cache.del(cacheKey)
+    
+    const { finished } = cached
+    if (finished) {
+      await cache.del(cacheKey)
+    }
   })
 
   return router
