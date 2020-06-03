@@ -8,7 +8,7 @@ const CACHE_PREFIX = 'CON_SLOW_API_'
 export default function (asyncFn) {
   const router = new Router()
   router.use(json({
-    limit: '50M',
+    limit: '50mb',
   }))
 
   router.post('/', async (req, res) => {
