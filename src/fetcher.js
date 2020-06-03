@@ -9,6 +9,7 @@ export const axios = Axios.create({
 export default async (url, params, config = { interval: 1000 }) => {
   let { data: { id } } = await axios.post(url, params)
   while (true) {
+    await waitTime(config.interval)
     let { data: { result, error, finished } } = await axios.get(url, {
       params: { id },
     })
@@ -16,7 +17,6 @@ export default async (url, params, config = { interval: 1000 }) => {
       if (error) throw error
       return result
     }
-    await waitTime(config.interval)
   }
 }
 
