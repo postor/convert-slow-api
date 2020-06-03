@@ -19,8 +19,8 @@ export default function (asyncFn) {
       finished: false,
       id,
     }
-    res.json(cached)
     await cache.set(cacheKey, cached)
+    res.json(cached)
     try {
       let result = await asyncFn(param)
       cached = {
