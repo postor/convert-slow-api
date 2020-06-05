@@ -12,7 +12,17 @@ export default function (asyncFn) {
   }))
 
   router.post('/', async (req, res) => {
-    let param = req.body
+    let param = req.body, { optimized } = req.query
+    if (!optimized) {
+      try {
+        let result = await asyncFn(param)
+        return res.json(result)
+      } catch (e) {
+        return res.json({
+          error: e.toString()
+        })
+      }
+    }
     let id = getId()
     let cacheKey = `${CACHE_PREFIX}${id}`
     let cached = {
@@ -46,13 +56,13 @@ export default function (asyncFn) {
     id = parseInt(id)
     let cacheKey = `${CACHE_PREFIX}${id}`
     let cached = await cache.get(cacheKey)
-    
+
     if (!cached) return res.json({
       error: `id=${id} job not found`,
     })
 
     res.json(cached)
-    
+
     const { finished } = cached
     if (finished) {
       await cache.del(cacheKey)

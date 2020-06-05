@@ -6,8 +6,19 @@ export const axios = Axios.create({
   }
 })
 
-export default async (url, params, config = { interval: 1000 }) => {
-  let { data: { id } } = await axios.post(url, params)
+export default async (url, params, conf = {}) => {
+  let config = {
+    optimized: true,
+    interval: 1000,
+    ...conf,
+  }
+  if (!config.optimized) {
+    let res = await axios.post(url, params)
+    return res.data
+  }
+  let { data: { id } } = await axios.post(url, params, {
+    params: { optimized: 'true' }
+  })
   while (true) {
     await waitTime(config.interval)
     let { data: { result, error, finished } } = await axios.get(url, {
