@@ -5,8 +5,8 @@ import cache from './cache'
 
 const CACHE_PREFIX = 'CON_SLOW_API_'
 
-export default function (asyncFn) {
-  const router = new Router()
+export default function (asyncFn: CallableFunction) {
+  const router = Router()
   router.use(json({
     limit: '50mb',
   }))
@@ -25,10 +25,11 @@ export default function (asyncFn) {
     }
     let id = getId()
     let cacheKey = `${CACHE_PREFIX}${id}`
-    let cached = {
+    let cached: any = {
       finished: false,
       id,
     }
+    //@ts-ignore
     await cache.set(cacheKey, cached)
     res.json(cached)
     try {
@@ -38,6 +39,7 @@ export default function (asyncFn) {
         result,
         finished: true
       }
+      //@ts-ignore
       await cache.set(cacheKey, cached)
     } catch (error) {
       cached = {
@@ -45,6 +47,7 @@ export default function (asyncFn) {
         error,
         finished: true
       }
+      //@ts-ignore
       await cache.set(cacheKey, cached)
     }
   })
@@ -52,7 +55,7 @@ export default function (asyncFn) {
   router.get('/', async (req, res) => {
     let { id } = req.query
     if (!id) return res.json({ error: 'need id query param' })
-
+    //@ts-ignore
     id = parseInt(id)
     let cacheKey = `${CACHE_PREFIX}${id}`
     let cached = await cache.get(cacheKey)

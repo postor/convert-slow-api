@@ -6,7 +6,7 @@ export const axios = Axios.create({
   }
 })
 
-export default async (url, params, conf = {}) => {
+export default async (url: string, params: any, conf = {}) => {
   let config = {
     optimized: true,
     interval: 1000,
@@ -31,6 +31,6 @@ export default async (url, params, conf = {}) => {
   }
 }
 
-function waitTime(milis) {
+function waitTime(milis:number) {
   return new Promise(resolve => setTimeout(resolve, milis))
 }
