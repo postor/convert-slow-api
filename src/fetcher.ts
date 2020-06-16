@@ -21,6 +21,7 @@ export default async (url: string, params: any, conf = {}) => {
   let { data: { id } } = await axios.post(url, params, {
     params: { optimized: 'true' }
   })
+  let resultError = undefined
   while (true) {
     await waitTime(config.interval)
     try {
@@ -28,13 +29,17 @@ export default async (url: string, params: any, conf = {}) => {
         params: { id },
       })
       if (finished) {
-        if (error) throw error
+        if (error) {
+          resultError = error
+          break
+        }
         return result
       }
     } catch (e) {
       config.errorHandler(e)
     }
   }
+  throw resultError
 }
 
 function waitTime(milis: number) {
