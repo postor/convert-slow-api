@@ -11,14 +11,19 @@ export default async (url: string, params: any, conf = {}) => {
   let config = {
     optimized: true,
     interval: 1000,
+    getConfig: {
+      timeout: 10 * 1000
+    },
+    postConfig: {},
     errorHandler: getErrorHandle(),
     ...conf,
   }
   if (!config.optimized) {
-    let res = await axios.post(url, params)
+    let res = await axios.post(url, params, config.postConfig)
     return res.data
   }
   let { data: { id } } = await axios.post(url, params, {
+    ...config.postConfig,
     params: { optimized: 'true' }
   })
   let resultError = undefined
@@ -26,6 +31,7 @@ export default async (url: string, params: any, conf = {}) => {
     await waitTime(config.interval)
     try {
       let { data: { result, error, finished } } = await axios.get(url, {
+        ...config.getConfig,
         params: { id },
       })
       if (finished) {
